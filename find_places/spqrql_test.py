@@ -1,3 +1,6 @@
+import requests
+from find_places.graphdb import GraphDB
+
 __author__ = 'Sander'
 
 import sys
@@ -30,3 +33,6 @@ sys.stderr.flush()
 g.parse(data=xmlstring, format='turtle')
 g.serialize("output.rdf", format="turtle")
 
+
+db = GraphDB()
+db.add_turtle(xmlstring)
