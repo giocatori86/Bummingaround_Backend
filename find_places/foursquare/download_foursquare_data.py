@@ -112,13 +112,8 @@ class FoursquareTripleStore():
         self.graph.remove((s, p, o))
 
 
-if __name__ == '__main__':
-    LOG_FORMAT = "%(asctime)-15s:%(levelname)-8s:%(threadName)s:%(filename)s:%(funcName)s: %(message)s"
-    LOG_LEVEL = logging.DEBUG
-    logging.basicConfig(level=LOG_LEVEL, format=LOG_FORMAT)
-    logging.info("starting application")
-
-    response = search_on_coordinates(52.364822, 4.881493, 10)
+def download_per_point_fs(lat, lon, radius):
+    response = search_on_coordinates(lat, lon, radius)
     # response = load_file_data("/home/matteo/Documenti/VU/Intelligent Web Applications/foursquare.json")
     logging.info("data: {}".format(response['meta']))
     store = FoursquareTripleStore()
@@ -127,3 +122,13 @@ if __name__ == '__main__':
         logging.info("venue: {}".format(dump_to_json(venue)))
         venue.save_in_triple_store(store)
     store.save()
+    return store.graph
+
+
+if __name__ == '__main__':
+    LOG_FORMAT = "%(asctime)-15s:%(levelname)-8s:%(threadName)s:%(filename)s:%(funcName)s: %(message)s"
+    LOG_LEVEL = logging.DEBUG
+    logging.basicConfig(level=LOG_LEVEL, format=LOG_FORMAT)
+    logging.info("starting application")
+
+    download_per_point_fs(52.364822, 4.881493, 10)

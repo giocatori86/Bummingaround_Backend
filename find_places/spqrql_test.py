@@ -41,5 +41,5 @@ for venue in g.subjects(RDF.type, LGDO.Amenity):
 ttl = g.serialize("output.rdf", format="turtle")
 ttl = g.serialize(format="turtle")
 
-# db = GraphDB()
-# db.add_turtle(ttl)
+db = GraphDB()
+db.add_turtle(ttl)
