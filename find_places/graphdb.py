@@ -12,13 +12,15 @@ GRAPHDB_LINKEDGEODATA_URL = "http://linkedgeodata.org/sparql/"
 
 NAMESPACES = {
     "dcterms": Namespace("http://purl.org/dc/terms/"),
-    "spatial": Namespace("http://jena.apache.org/spatial#"),
+    "spatial": Namespace("http://geovocab.org/spatial#"),
     "geo": Namespace("http://www.w3.org/2003/01/geo/wgs84_pos#"),
     "geom": Namespace("http://geovocab.org/geometry#"),
     "gn": Namespace("http://www.geonames.org/ontology#"),
     "lgdo": Namespace("http://linkedgeodata.org/ontology/"),
     "lgd": Namespace("http://linkedgeodata.org/triplify/"),
+    "lgd-meta": Namespace("http://linkedgeodata.org/meta/"),
     "lgd-geom": Namespace("http://linkedgeodata.org/geometry/"),
+    "iwa": Namespace("https://www.example.com/iwa/"),
 }
 
 
