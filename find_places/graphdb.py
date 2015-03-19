@@ -6,7 +6,8 @@ import requests
 
 __author__ = 'matteo'
 
-GRAPHDB_BASE_URL = "http://covolunablu.org:27019/openrdf-workbench/repositories/bummingaround/add"
+GRAPHDB_ADD_URL = "http://covolunablu.org:27019/openrdf-workbench/repositories/bummingaround/add"
+GRAPHDB_BASE_URL = "http://covolunablu.org:27019/openrdf-sesame/repositories/bummingaround"
 GRAPHDB_LINKEDGEODATA_URL = "http://linkedgeodata.org/sparql/"
 
 NAMESPACES = {
@@ -48,12 +49,16 @@ class QueryResult:
 
 
 class GraphDB:
-    def __init__(self, url=None):
+    def __init__(self, url=None, add_url=None):
         if url is None:
             self.url = GRAPHDB_BASE_URL
         else:
             self.url = url
-        pass
+
+        if add_url is None:
+            self.add_url = GRAPHDB_ADD_URL
+        else:
+            self.add_url = add_url
 
     def query(self, query, response_type=TURTLE):
         logging.info("starting query to {}".format(self.url))
@@ -71,7 +76,7 @@ class GraphDB:
             'source': 'contents',
             'content': turtle_string
         }
-        r = requests.post(self.url, files=files)
+        r = requests.post(self.add_url, files=files)
         if r.status_code >= 400:
             raise Exception("ERROR uploading data!\n"
                             "Response: {}\n"
