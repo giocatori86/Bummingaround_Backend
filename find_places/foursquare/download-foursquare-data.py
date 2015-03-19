@@ -19,25 +19,6 @@ def __init__():
     logging.info("starting application")
 
 
-class Provider():
-    def __init__(self, json_data):
-        self.name = json_data['name']
-        self.urlText = json_data['urlText']
-        # ignoring icon
-
-    def save_in_triple_store(self, _store):
-        provider_URI = _store.fsevent["provider/" + self.name]
-        _store.add(provider_URI, RDF.type, _store.fsevent.Provider)
-        # _store.add(provider_URI, _store.fs.name, Literal(self.name))
-        _store.add(provider_URI, _store.fs.urlText, Literal(self.urlText))
-
-        return provider_URI
-
-    @staticmethod
-    def save_class_definitions(_store):
-        _store.add(_store.fsevent.Provider, RDF.type, OWL.Class)
-
-
 class Category():
     def __init__(self, json_data):
         self.id = json_data['id']
@@ -60,61 +41,6 @@ class Category():
     @staticmethod
     def save_class_definitions(_store):
         _store.add(_store.fs.Category, RDF.type, OWL.Class)
-
-
-class Event():
-    def __init__(self, json_data):
-        self.id = json_data['id']
-        self.name = json_data['name']
-        self.allDay = json_data['allDay']
-        self.timeZone = json_data['timeZone']
-        self.text = json_data['text']
-        self.url = json_data['url']
-        self.provider = Provider(json_data['provider'])
-        # ignoring stats
-        # ignoring images
-
-        # Duration
-        if self.allDay:
-            self.date = json_data['date']
-        else:
-            self.startAt = json_data['startAt']
-            self.endAt = json_data['endAt']
-
-        # Categories
-        self.categories = []
-        for category in json_data['categories']:
-            self.categories.append(Category(category))
-
-    def save_in_triple_store(self, _store):
-        event_URI = _store.fsevent[self.id]
-        _store.add(event_URI, RDF.type, _store.fs.Event)
-        _store.add(event_URI, _store.fs.name, Literal(self.name))
-        _store.add(event_URI, _store.fs.timeZone, Literal(self.timeZone))
-        _store.add(event_URI, _store.fsevent.text, Literal(self.text))
-        _store.add(event_URI, _store.fs.url, URIRef(self.url))
-
-        _store.add(event_URI, _store.fsevent.allDay, Literal(self.allDay))
-        if self.allDay:
-            _store.add(event_URI, _store.fsevent.date, Literal(self.date))
-        else:
-            _store.add(event_URI, _store.fsevent.startAt, Literal(self.startAt))
-            _store.add(event_URI, _store.fsevent.endAt, Literal(self.endAt))
-
-        provider_URI = self.provider.save_in_triple_store(_store)
-        _store.add(event_URI, _store.fsevent.provider, provider_URI)
-
-        for category in self.categories:
-            category_URI = category.save_in_triple_store(_store)
-            _store.add(event_URI, _store.fsevent.category, category_URI)
-
-        return event_URI
-
-    @staticmethod
-    def save_class_definitions(_store):
-        _store.add(_store.fs.Event, RDF.type, OWL.Class)
-        Provider.save_class_definitions(_store)
-        Category.save_class_definitions(_store)
 
 
 class Location():
@@ -188,20 +114,12 @@ class Venue():
         # ignoring inbox
         # ignoring attributes
         # ignoring bestPhoto
-
-        self.events = []
-        try:
-            for event in json_data['events']['items']:
-                self.events.append(Event(event))
-        except KeyError:
-            # there are no events today
-            pass
+        # ignoring events
 
     @staticmethod
     def save_class_definitions(_store):
         _store.add(_store.fs.Venue, RDF.type, OWL.Class)
         Location.save_class_definitions(_store)
-        Event.save_class_definitions(_store)
         # _store.add(_store.fs.location, RDF.type, OWL.FunctionalProperty)
         # _store.add(_store.fs.location, RDF.type, OWL.InverseFunctionalProperty)
 
@@ -229,10 +147,6 @@ class Venue():
 
         for tag in self.tags:
             _store.add(venue, _store.fs.tag, Literal(tag))
-
-        for event in self.events:
-            event_URI = event.save_in_triple_store(_store)
-            _store.add(venue, _store.fs.event, event_URI)
 
         return venue
 
@@ -278,12 +192,9 @@ class FoursquareTripleStore():
 
     def __init__(self):
         self.graph = Graph()
-        self.graph.parse(self.filename, format=self.file_type)
         self.graph.bind("owl", OWL)
         self.fs = Namespace("https://api.foursquare.com/v2/venues/")
         self.graph.bind("fs", self.fs)
-        self.fsevent = Namespace("https://api.foursquare.com/v2/events/")
-        self.graph.bind("fsevent", self.fsevent)
         self.dcterms = Namespace("http://purl.org/dc/terms/")
         self.graph.bind("dcterms", self.dcterms)
 
