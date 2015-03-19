@@ -34,6 +34,9 @@ class QueryResult:
     def __str__(self):
         return self.string
 
+    def convert(self):
+        return self.result.convert()
+
     def get_string(self):
         return self.string
 
@@ -52,12 +55,12 @@ class GraphDB:
             self.url = url
         pass
 
-    def query(self, query):
+    def query(self, query, response_type=TURTLE):
         logging.info("starting query to {}".format(self.url))
         logging.info("query:\n{}".format(query))
         sparql = SPARQLWrapper(self.url)
         sparql.setQuery(query)
-        sparql.setReturnFormat(TURTLE)
+        sparql.setReturnFormat(response_type)
         result = sparql.query()
         logging.info("query finished")
         return QueryResult(result)
