@@ -1,0 +1,26 @@
+@prefix iwa: <https://www.example.com/iwa/>.
+@prefix fs: <https://api.foursquare.com/v2/venues/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix geo:<http://www.w3.org/2003/01/geo/wgs84_pos#>.
+@prefix gn:<http://www.geonames.org/ontology#>.
+
+
+ fs:name owl:equivalentProperty rdfs:label .
+ fs:adress owl:equivalantPropety iwa:adress.
+ 
+iwa:lat a owl:ObjectProperty.
+geo:lat owl:equivalentProperty iwa:lat.
+iwa:fs_lat owl:propertyChainAxiom (fs:location fs:lng);
+           owl:equivalentProperty iwa:lat.
+
+iwa:lng a owl:ObjectProperty.
+geo:long owl:equivalentProperty iwa:lng.
+iwa:fs_lng owl:propertyChainAxiom (fs:location fs:lat);
+           owl:equivalentProperty iwa:lng.
+
+
+
+
+
+
+
