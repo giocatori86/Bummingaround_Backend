@@ -6,6 +6,7 @@ from rdflib.namespace import OWL
 import requests
 
 from find_places.foursquare.data import Venue
+from find_places.graphdb import GraphDB
 
 
 __author__ = 'matteo'
@@ -90,13 +91,16 @@ class FoursquareTripleStore():
         self.dcterms = Namespace("http://purl.org/dc/terms/")
         self.graph.bind("dcterms", self.dcterms)
 
+        self.graphDB = GraphDB()
+
         self._create_classes()
 
     def _create_classes(self):
         Venue.save_class_definitions(self)
 
     def save(self):
-        self.graph.serialize(self.filename, format=self.file_type)
+        ttl = self.graph.serialize(format=self.file_type)
+        self.graphDB.add_turtle(ttl)
 
     def add(self, s, p, o):
         self.graph.add((s, p, o))
