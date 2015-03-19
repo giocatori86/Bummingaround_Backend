@@ -11,7 +11,7 @@ GEO = NAMESPACES['geo']
 
 def download_per_point_lgd(lat, lon, radius):
     linked_geo_data_db = GraphDB(GRAPHDB_LINKEDGEODATA_URL)
-    query = spqrql.create_geodata_query(lon, lat, radius)
+    query = spqrql.create_geodata_query(lat, lon, radius)
 
     g = linked_geo_data_db.query(query).get_graph()
 
