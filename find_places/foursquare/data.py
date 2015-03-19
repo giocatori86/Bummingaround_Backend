@@ -1,4 +1,5 @@
 from rdflib import Literal, URIRef, RDF, OWL
+from find_places.reverse_geocoding import get_address
 
 __author__ = 'matteo'
 
@@ -29,24 +30,27 @@ class Category():
 
 class Location():
     def __init__(self, json_data):
+        self.lat = json_data['lat']
+        self.lng = json_data['lng']
+        self.cc = json_data['cc']
+        self.country = json_data['country']
+        self.formattedAddress = "\n".join(json_data['formattedAddress'])
+
         try:
             self.address = json_data['address']
         except KeyError:
-            self.address = None
+            self.create_address()
 
         try:
             self.crossStreet = json_data['crossStreet']
         except KeyError:
             self.crossStreet = None
 
-        self.lat = json_data['lat']
-        self.lng = json_data['lng']
         try:
             self.postalCode = json_data['postalCode']
         except KeyError:
             self.postalCode = None
 
-        self.cc = json_data['cc']
         try:
             self.city = json_data['city']
         except KeyError:
@@ -55,9 +59,6 @@ class Location():
             self.state = json_data['state']
         except KeyError:
             self.state = None
-
-        self.country = json_data['country']
-        self.formattedAddress = "\n".join(json_data['formattedAddress'])
 
     @staticmethod
     def save_class_definitions(_store):
@@ -82,6 +83,10 @@ class Location():
         _store.add(location_node, _store.fs.country, Literal(self.country))
         _store.add(location_node, _store.fs.formattedAdress, Literal(self.formattedAddress))
         return location_node
+
+    def create_address(self):
+        self.address = get_address(self.lat, self.lng)
+
 
 
 class Venue():
