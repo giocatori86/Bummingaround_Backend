@@ -1,12 +1,29 @@
 import logging
 from SPARQLWrapper import TURTLE, SPARQLWrapper
 import rdflib
+from rdflib import Namespace
 import requests
 
 __author__ = 'matteo'
 
 GRAPHDB_BASE_URL = "http://covolunablu.org:27019/openrdf-workbench/repositories/bummingaround/add"
 GRAPHDB_LINKEDGEODATA_URL = "http://linkedgeodata.org/sparql/"
+
+NAMESPACES = {
+    "dcterms": Namespace("http://purl.org/dc/terms/"),
+    "spatial": Namespace("http://jena.apache.org/spatial#"),
+    "geo": Namespace("http://www.w3.org/2003/01/geo/wgs84_pos#"),
+    "geom": Namespace("http://geovocab.org/geometry#"),
+    "gn": Namespace("http://www.geonames.org/ontology#"),
+    "lgdo": Namespace("http://linkedgeodata.org/ontology/"),
+    "lgd": Namespace("http://linkedgeodata.org/triplify/"),
+    "lgd-geom": Namespace("http://linkedgeodata.org/geometry/"),
+}
+
+
+def define_namespaces(graph):
+    for prefix in NAMESPACES:
+        graph.bind(prefix, NAMESPACES[prefix])
 
 
 class QueryResult:
@@ -22,6 +39,7 @@ class QueryResult:
 
     def get_graph(self):
         g = rdflib.Graph()
+        define_namespaces(g)
         g.parse(data=self.string, format='turtle')
         return g
 
