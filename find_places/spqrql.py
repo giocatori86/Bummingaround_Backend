@@ -5,6 +5,8 @@ from SPARQLWrapper import SPARQLWrapper, TURTLE
 
 __author__ = 'Sander'
 
+# take a look at this
+# http://www.slideshare.net/langec/linked-open-geodata-and-the-distributed-ontology-language-a-perfect-match
 GEODATA_BASE_QUERY = """
 PREFIX spatial:<http://jena.apache.org/spatial#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
