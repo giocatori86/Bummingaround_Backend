@@ -25,3 +25,17 @@ class Venue:
             'name': self.name,
             'address': self.address
         }
+
+
+def load_venues_from_triple_json(triple_json):
+    venues = []
+    for line in triple_json['results']['bindings']:
+        venue = Venue(
+            line['id']['value'],
+            line['lat']['value'],
+            line['lon']['value'],
+            line['label']['value'],
+            "no address"  # TODO add address to the query
+        )
+        venues.append(venue)
+    return venues
