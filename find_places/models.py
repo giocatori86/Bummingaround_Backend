@@ -43,5 +43,5 @@ def load_venues_from_triple_json(triple_json):
             venues.append(venue)
         except KeyError:
             logging.error("line: {}".format(json.dumps(line)))
-            raise
+            
     return venues
