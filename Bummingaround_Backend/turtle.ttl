@@ -5,9 +5,12 @@
 @prefix gn:<http://www.geonames.org/ontology#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix lgd-meta: <http://linkedgeodata.org/meta/> .
+@prefix lgdo: <http://linkedgeodata.org/ontology/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
 
 fs:name owl:equivalentProperty rdfs:label .
-fs:adress owl:equivalantPropety iwa:adress.
+fs:adress owl:equivalantPropety iwa:adress .
+lgdo:url owl:equivalentProperty foaf:homepage .
 
 fs:Venue rdfs:subClassOf lgd-meta:Node .
  
@@ -20,3 +23,6 @@ iwa:lng a owl:ObjectProperty.
 geo:long owl:equivalentProperty iwa:lng.
 iwa:fs_lng owl:propertyChainAxiom (fs:location fs:lng);
            owl:equivalentProperty iwa:lng.
+
+lgd-meta:Node owl:hasKey ( iwa:address ) .
+lgd-meta:Node owl:hasKey ( foaf:homepage ) .
