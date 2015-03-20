@@ -18,15 +18,17 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX xds: <http://www.w3.org/2001/XMLSchema#>
 PREFIX lgdo: <http://linkedgeodata.org/ontology/>
+PREFIX lgd-meta: <http://linkedgeodata.org/meta/>
+PREFIX iwa: <https://www.example.com/iwa/>
 
 SELECT ?id ?label ?lat ?lon
 WHERE {{
- ?id rdf:type lgdo:Amenity ;
+ ?id a lgd-meta:Node ;
     rdfs:label ?label ;
-    geo:lat ?lat;
-    geo:long ?lon.
-  FILTER( ({2}-xsd:float(?lat))*({2}-xsd:float(?lat)) + ({3}-xsd:float(?lon))*({3}-xsd:float(?lon))*({0}-({1}*xsd:float(?lat))) < {4:f} ) .
-}} LIMIT 10
+    iwa:lat ?lat;
+    iwa:lng ?lon.
+  FILTER( ({2}-xsd:float(?lat))*({2}-xsd:float(?lat)) + ({3}-xsd:float(?lon))*({3}-xsd:float(?lon))*({0}-({1}*xsd:float(?lat))) < {4} ) .
+}}
 """
 
 GEODATA_BASE_QUERY_DESCRIBE = """
@@ -45,8 +47,8 @@ WHERE {{
     rdfs:label ?label ;
     geo:lat ?lat;
     geo:long ?lon.
-  FILTER( ({2}-xsd:float(?lat))*({2}-xsd:float(?lat)) + ({3}-xsd:float(?lon))*({3}-xsd:float(?lon))*({0}-({1}*xsd:float(?lat))) < {4:f} ) .
-}} LIMIT 10
+  FILTER( ({2}-xsd:float(?lat))*({2}-xsd:float(?lat)) + ({3}-xsd:float(?lon))*({3}-xsd:float(?lon))*({0}-({1}*xsd:float(?lat))) < {4} ) .
+}}
 """
 
 BRGRAD = 111194.9
