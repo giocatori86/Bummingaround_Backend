@@ -1,5 +1,6 @@
 import json
 import logging
+import traceback
 from django.http import HttpResponse
 
 from django.utils.datastructures import MultiValueDictKeyError
@@ -38,29 +39,42 @@ def search_stores(__points):
 
 @csrf_exempt
 def search_stores_view(request):
+    logging.info("handling request (method: {})".format(request.method))
     if request.method != 'POST':
         response = HttpResponse('error: only post supported')
         response.status_code = 400
         return response
 
     try:
-        request_json = json.loads(request.body.decode("utf-8"))
+        requestPayload = (request.body.decode("utf-8"))
+        logging.debug("body of the request: {}".format(requestPayload))
+        request_json = json.loads(requestPayload[:])
+        logging.info("request json: {}".format(json.dumps(request_json)))
         _path = request_json['path']
 
         _points = []
         for _point in _path:
             _points.append(Point(_point['lat'], _point['lon']))
 
-    except (KeyError, MultiValueDictKeyError) as e:
-        response = HttpResponse('{"error": ' + str(e) + ' }')
+    except (Exception, KeyError, MultiValueDictKeyError) as e:
+        logging.warning("error: {}".format(e))
+        logging.warning(traceback.format_exc())
+        response = HttpResponse(json.dumps({"error": str(e)}))
         response.status_code = 400
         return response
 
-    _venues = search_stores(_points)
-    logging.info("found {} venues after too much work".format(len(_venues)))
+    try:
+        _venues = search_stores(_points)
+        logging.info("found {} venues after too much work".format(len(_venues)))
 
-    response = HttpResponse(json.dumps(_venues))
-    return response
+        response = HttpResponse(json.dumps(_venues))
+        return response
+    except Exception as e:
+        logging.warning("error: {}".format(e))
+        logging.warning(traceback.format_exc())
+        response = HttpResponse(json.dumps({"error": str(e)}))
+        response.status_code = 400
+        return response       
 
 
 if __name__ is "__main__":
