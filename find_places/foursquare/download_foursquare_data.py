@@ -115,7 +115,7 @@ class FoursquareTripleStore():
 def download_per_point_fs(lat, lon, radius):
     response = search_on_coordinates(lat, lon, radius)
     # response = load_file_data("/home/matteo/Documenti/VU/Intelligent Web Applications/foursquare.json")
-    logging.info("data: {}".format(response['meta']))
+    # logging.info("data: {}".format(response['meta']))
     store = FoursquareTripleStore()
     for venue_json in response['response']['venues']:
         venue = Venue(venue_json)
