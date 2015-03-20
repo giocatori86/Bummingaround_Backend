@@ -3,24 +3,20 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix geo:<http://www.w3.org/2003/01/geo/wgs84_pos#>.
 @prefix gn:<http://www.geonames.org/ontology#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix lgd-meta: <http://linkedgeodata.org/meta/> .
 
+fs:name owl:equivalentProperty rdfs:label .
+fs:adress owl:equivalantPropety iwa:adress.
 
- fs:name owl:equivalentProperty rdfs:label .
- fs:adress owl:equivalantPropety iwa:adress.
+fs:Venue rdfs:subClassOf lgd-meta:Node .
  
 iwa:lat a owl:ObjectProperty.
 geo:lat owl:equivalentProperty iwa:lat.
-iwa:fs_lat owl:propertyChainAxiom (fs:location fs:lng);
+iwa:fs_lat owl:propertyChainAxiom (fs:location fs:lat);
            owl:equivalentProperty iwa:lat.
 
 iwa:lng a owl:ObjectProperty.
 geo:long owl:equivalentProperty iwa:lng.
-iwa:fs_lng owl:propertyChainAxiom (fs:location fs:lat);
+iwa:fs_lng owl:propertyChainAxiom (fs:location fs:lng);
            owl:equivalentProperty iwa:lng.
-
-
-
-
-
-
-
