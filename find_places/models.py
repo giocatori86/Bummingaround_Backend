@@ -1,3 +1,5 @@
+import json
+import logging
 from django.db import models
 
 # Create your models here.
@@ -30,12 +32,16 @@ class Venue:
 def load_venues_from_triple_json(triple_json):
     venues = []
     for line in triple_json['results']['bindings']:
-        venue = Venue(
-            line['id']['value'],
-            line['lat']['value'],
-            line['lon']['value'],
-            line['label']['value'],
-            "no address"  # TODO add address to the query
-        )
-        venues.append(venue)
+        try:
+            venue = Venue(
+                line['id']['value'],
+                line['lat']['value'],
+                line['lon']['value'],
+                line['label']['value'],
+                "no address"  # TODO add address to the query
+            )
+            venues.append(venue)
+        except KeyError:
+            logging.error("line: {}".format(json.dumps(line)))
+            raise
     return venues
