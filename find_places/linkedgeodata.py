@@ -1,3 +1,4 @@
+import logging
 from rdflib import RDF, Literal
 from find_places import spqrql
 from find_places.graphdb import NAMESPACES, GraphDB, GRAPHDB_LINKEDGEODATA_URL, define_namespaces
@@ -30,7 +31,8 @@ def download_per_point_lgd(lat, lon, radius):
         if address is not None:
             g.add((venue, NAMESPACES['iwa'].address, Literal(address)))
 
-    ttl = g.serialize(format="turtle")
+    ttl = g.serialize(format="turtle").decode("utf-8")
+    logging.info("lgd result:\n{}".format(ttl))
 
     db = GraphDB()
     db.add_turtle(ttl)
