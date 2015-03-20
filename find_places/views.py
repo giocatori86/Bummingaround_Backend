@@ -1,4 +1,5 @@
 import json
+import logging
 from django.http import HttpResponse
 
 from django.utils.datastructures import MultiValueDictKeyError
@@ -8,16 +9,35 @@ from find_places.linkedgeodata import download_per_point_lgd
 from find_places.models import Point, load_venues_from_triple_json
 from find_places.spqrql import query_db_position
 
-DEFAULT_RADIUS = 1000
+DEFAULT_RADIUS = 100
 
 
 def get_venues_from_pos(lat, long, radius):
     result = query_db_position(lat, long, radius)
-    venues = load_venues_from_triple_json(result)
-    return venues
+    _venues = load_venues_from_triple_json(result)
+    return _venues
+
+
+def search_stores(__points):
+    __venues = {}
+    for __point in __points:
+        venues_per_point = get_venues_from_pos(__point.lat, __point.lon, DEFAULT_RADIUS)
+
+        # if less than 5 venues are found, search on external sources ...
+        if len(venues_per_point) < 5:
+            download_per_point_fs(__point.lat, __point.lon, DEFAULT_RADIUS)  # FS
+            download_per_point_lgd(__point.lat, __point.lon, DEFAULT_RADIUS)  # LGD
+            # ... and recall the query
+            venues_per_point = get_venues_from_pos(__point.lat, __point.lon, DEFAULT_RADIUS)
+
+        for venue in venues_per_point:
+            __venues[venue.id] = venue.serialize()
+
+    return __venues
+
 
 @csrf_exempt
-def search_stores(request):
+def search_stores_view(request):
     if request.method != 'POST':
         response = HttpResponse('error: only post supported')
         response.status_code = 400
@@ -25,30 +45,24 @@ def search_stores(request):
 
     try:
         request_json = json.loads(request.body.decode("utf-8"))
-        path = request_json['path']
+        _path = request_json['path']
 
-        points = []
-        for point in path:
-            points.append(Point(point['lat'], point['lon']))
+        _points = []
+        for _point in _path:
+            _points.append(Point(_point['lat'], _point['lon']))
 
     except (KeyError, MultiValueDictKeyError) as e:
         response = HttpResponse('{"error": ' + str(e) + ' }')
         response.status_code = 400
         return response
 
-    venues = {}
-    for point in points:
-        venues_per_point = get_venues_from_pos(point.lat, point.lon, DEFAULT_RADIUS)
+    _venues = search_stores(_points)
+    logging.info("found {} venues after too much work".format(len(_venues)))
 
-        # if less than 5 venues are found, search on external sources ...
-        if len(venues_per_point) < 5:
-            download_per_point_lgd(point.lat, point.lon, DEFAULT_RADIUS)  # LGD
-            download_per_point_fs(point.lat, point.lon, DEFAULT_RADIUS)  # FS
-            # ... and recall the query
-            venues_per_point = get_venues_from_pos(point.lat, point.lon, DEFAULT_RADIUS)
-
-        for venue in venues_per_point:
-            venues[venue.id] = venue.serialize()
-
-    response = HttpResponse(json.dumps(venues))
+    response = HttpResponse(json.dumps(_venues))
     return response
+
+
+if __name__ is "__main__":
+    venues = search_stores([Point(52.36482245667135, 4.88149333504718)])
+    print(json.dumps(venues))
