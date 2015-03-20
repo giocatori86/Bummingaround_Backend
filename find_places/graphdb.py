@@ -84,4 +84,7 @@ class GraphDB:
                             "Response: {}\n"
                             "Response body:\n{}".format(r, r.text))
 
+        logging.info("turtle added")
+        logging.info("response: {}".format(r.text))
+
         return r
