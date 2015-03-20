@@ -1,5 +1,6 @@
 import json
 import logging
+import traceback
 from django.http import HttpResponse
 
 from django.utils.datastructures import MultiValueDictKeyError
@@ -51,10 +52,13 @@ def search_stores_view(request):
         for _point in _path:
             _points.append(Point(_point['lat'], _point['lon']))
 
-    except (KeyError, MultiValueDictKeyError) as e:
-        response = HttpResponse('{"error": ' + str(e) + ' }')
+    except (Exception, KeyError, MultiValueDictKeyError) as e:
+        logging.warning("error: {}".format(e))
+        logging.warning(traceback.format_exc())
+        response = HttpResponse(json.dumps({"error": str(e)}))
         response.status_code = 400
         return response
+
 
     _venues = search_stores(_points)
     logging.info("found {} venues after too much work".format(len(_venues)))
